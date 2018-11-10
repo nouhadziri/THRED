@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import os
+import argparse
+import shutil
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-m", "--model_dir", required=True, help="model dir to cleanup")
+args = parser.parse_args()
+
+if not os.path.exists(args.model_dir):
+    print('The directory does not exist')
+elif not os.path.isdir(args.model_dir):
+    print('The input is not directory :(')
+else:
+    for f in os.listdir(args.model_dir):
+        file = os.path.join(args.model_dir, f)
+
+        if '.ckpt' in f or f.startswith('log_') or f.lower() == 'checkpoint' or f.endswith('.shuf') or f.endswith('_config.yml'):
+            os.remove(file)
+        elif (f.endswith('_log') or f.startswith('best_')) and os.path.isdir(file):
+            shutil.rmtree(file)
+
+    print('All done!!!')

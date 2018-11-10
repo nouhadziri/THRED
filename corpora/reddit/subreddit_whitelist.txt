@@ -1,0 +1,95 @@
+/r/askscience	t5_2qm4e	title
+/r/explainlikeimfive	t5_2sokd	title	start$ELI5:,[ELI5],ELI5 -,ELI5-,ELI5
+/r/news	t5_2qh3l
+/r/worldnews	t5_2qh13
+/r/GetStudying	t5_2tl44
+/r/LifeProTips	t5_2s5oq	title	start$LPT:,LPT-,LPT -,LPT,LPT Request:,LPT REQUEST :,[LPT REQUEST]
+/r/GetMotivated	t5_2rmfx	title	start,end$[Text],[Image],[Discussion],[Article],[Video],[Story],[Tool]
+/r/minimalism	t5_2r0z9	title	start,end$[arts],[lifestyle],[Academic],[fun],[meta]
+/r/sports	t5_2qgzy	title
+/r/movies	t5_2qh3s
+/r/television	t5_2qh6e
+/r/politics	t5_2cneq
+/r/YouShouldKnow	t5_2r94o	title	start$YSK,YSK:,YSK -, YSK-$You Should Know
+/r/AskReddit	t5_2qh1i	title
+/r/funny	t5_2qh33	title
+/r/Jokes	t5_2qh72	title
+/r/TalesFromRetail	t5_2t2zt
+/r/nostalgia	t5_2qnub	title
+/r/bestof	t5_2qh3v
+/r/todayilearned	t5_2qqjc	title	start$TIL,TIL:,TIL -,TIL-$Today I learned
+/r/space	t5_2qh87
+/r/trees	t5_2r9vp	title
+/r/food	t5_2qh55	title	start$[Homemade],[I Ate]$Homemade,I ate
+/r/canada	t5_2qh68
+/r/toronto	t5_2qi63
+/r/vancouver	t5_2qhov
+/r/europe	t5_2qh4j
+/r/worldpolitics	t5_2qh9a
+/r/CanadaPolitics	t5_2s4gt
+/r/worldevents	t5_2riv9
+/r/announcements	t5_2r0ij	title
+/r/gadgets	t5_2qgzt
+/r/education	t5_2qhlm
+/r/business	t5_2qgzg
+/r/CasualConversation	t5_323oy	title
+/r/AskScienceDiscussion	t5_2vlah	title
+/r/Showerthoughts	t5_2szyo	title
+/r/NoStupidQuestions	t5_2w844	title
+/r/femalefashionadvice	t5_2s8o5	title
+/r/malefashionadvice	t5_2r65t
+/r/Fitness	t5_2qhx4	title
+/r/Cooking	t5_2qh7f	title
+/r/solotravel	t5_2rxxm	title
+/r/DecidingToBeBetter	t5_2tand	title
+/r/productivity	t5_2qh1k	title
+/r/Anxiety	t5_2qmij	title
+/r/depression	t5_2qqqf	title
+/r/InsightfulQuestions	t5_2smsq	title
+/r/answers	t5_2qkeh	title
+/r/HealthyFood	t5_2rhbm	title
+/r/TrueAskReddit	t5_2s91q	title
+/r/askphilosophy	t5_2sc5r	title
+/r/AskEngineers	t5_2sebk	title
+/r/nutrition	t5_2qoox	title
+/r/vegetarian	t5_2qm7x	title
+/r/fitmeals	t5_2sd23	title
+/r/running	t5_2qlit	title
+/r/bicycling	t5_2qi0s	title
+/r/C25K	t5_2rgoq	title
+/r/Advice	t5_2qjdm	title
+/r/Sneakers	t5_2qrtt	title
+/r/AskCulinary	t5_2t82m	title
+/r/cookingforbeginners	t5_32u9b	title
+/r/Coffee	t5_2qhze	title
+/r/tea	t5_2qq5e	title
+/r/Pizza	t5_2qlhq	title
+/r/BBQ	t5_2qxww	title
+/r/grilledcheese	t5_2qyw8	title
+/r/cscareerquestions	t5_2sdpm	title
+/r/EngineeringStudents	t5_2sh0b	title
+/r/Entrepreneur	t5_2qldo	title
+/r/Economics	t5_2qh1s
+/r/marketing	t5_2qhmg	title
+/r/smallbusiness	t5_2qr34	title
+/r/environment	t5_2qh1n
+/r/InternetIsBeautiful	t5_2ul7u
+/r/AskScienceFiction	t5_2slu2
+/r/books	t5_2qh4i	title
+/r/wikipedia	t5_2qh3b
+/r/WikiLeaks	t5_2qy11
+/r/Documentaries	t5_2qhlh
+/r/marvelstudios	t5_2uii8
+/r/Moviesinthemaking	t5_2uiff
+/r/Guitar	t5_2qi79
+/r/formula1	t5_2qimj
+/r/golf	t5_2qhcs
+/r/skiing	t5_2qig7
+/r/soccer	t5_2qi58
+/r/hockey	t5_2qiel
+/r/StrangerThings	t5_3adlm
+/r/breakingbad	t5_2rlw4
+/r/Accounting	t5_2qw2b
+/r/cars	t5_2qhl2
+/r/UpliftingNews	t5_2u3ta
+/r/changemyview	t5_2w2s8	title	start$CMV:

@@ -1,0 +1,15 @@
+glove:
+  300d:
+    url: 'http://nlp.stanford.edu/data/glove.840B.300d.zip'
+  100d:
+    url: 'http://nlp.stanford.edu/data/glove.6B.zip'
+
+word2vec:
+  300d:
+    url: 'https://bit.ly/w2v-mirror'
+
+tf_word2vec:
+  250d:
+    module_url: "https://tfhub.dev/google/Wiki-words-250/1"
+  500d:
+    module_url: "https://tfhub.dev/google/Wiki-words-500/1"

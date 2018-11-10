@@ -1,0 +1,14 @@
+beautifulsoup4==4.6.0
+emot>=1.0
+gensim>=3.4.0
+mistune>=0.8.0
+numpy>=1.14.0
+prompt-toolkit>=1.0.15
+PyYAML>=3.12,<4.0
+redis==2.10.6
+tqdm>=4.20.0
+scipy>=1.0.0,<2.0.0
+tensorflow_gpu>=1.4.0
+tensorflow-hub>=0.1.0
+spacy>=2.0.0,<3.0.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-2.0.0/en_core_web_lg-2.0.0.tar.gz#egg=en_core_web_lg

@@ -1,0 +1,51 @@
+type: 'thred'
+learning_rate: 0.0002
+max_gradient_norm: 5.0
+vocab_size: 60000
+embedding_size: 300
+embedding_type: 'glove'
+cell_type: 'gru'
+context_direction: 'forward'
+encoder_type: 'bi'
+hidden_units: 1024
+attention_type: 'bahdanau'
+optimizer: 'adam'
+batch_size: 128
+
+num_buckets: 5
+topic_words_per_utterance: 50
+src_max_len: 30
+tgt_max_len: 30
+
+num_pretrain_turns: 2
+num_turns: 3
+
+num_pretrain_epochs: 0
+num_train_epochs: 15
+steps_per_stats: 100
+# Early Stopping parameters, inspired from VHRED impl
+patience: 50
+degrade_threshold: 1.003
+
+encoder_dropout_rate: 0.2
+context_dropout_rate: 0.2
+decoder_dropout_rate: 0.2
+
+decoding_length_factor: 2.0
+
+learning_rate_decay_scheme: luong234
+#start_decay_step: 0
+#decay_steps: 10000
+#decay_factor: 0.5
+
+scheduled_sampling_prob: 0.0
+scheduled_sampling_decay_scheme: luong234
+
+beam_width: 5
+length_penalty_weight: 1.0
+sampling_temperature: 0.0
+infer_batch_size: 128
+
+log_device: False
+
+boost_topic_gen_prob: True
