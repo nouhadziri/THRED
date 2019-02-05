@@ -179,8 +179,7 @@ class VanillaNMTEncoderDecoder(NMTEncoderDecoderWrapper):
         with codecs.getreader("utf-8")(
                 tf.gfile.GFile(input_file, mode="rb")) as f:
             for line in f.readlines():
-                utterances = line.strip().split('\t')
-                inference_data.append(utterances)
+                inference_data.append(line.strip())
 
         return inference_data
 
@@ -191,7 +190,7 @@ class VanillaNMTEncoderDecoder(NMTEncoderDecoderWrapper):
         num_train_steps = self.config.num_train_steps
         steps_per_stats = self.config.steps_per_stats
         # steps_per_external_eval = self.config.steps_per_external_eval
-        steps_per_eval = 20 * steps_per_stats
+        steps_per_eval = 40 * steps_per_stats
         # if not steps_per_external_eval:
         #     steps_per_external_eval = 5 * steps_per_eval
 
@@ -256,7 +255,6 @@ class VanillaNMTEncoderDecoder(NMTEncoderDecoderWrapper):
         self.config.save()
         log.print_out("# Configs saved")
 
-        epoch_step = 0
         # Initialize all of the iterators
         skip_count = self.config.batch_size * self.config.epoch_step
         log.print_out("# Init train iterator for %d steps, skipping %d elements" %
