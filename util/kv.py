@@ -32,7 +32,7 @@ class TinyRedis:
     def set(self, key, value):
         return self.__r.set(key, value)
 
-    def get(self, key, value):
+    def get(self, key):
         return self.__r.get(key)
 
     def hscan(self, key):
@@ -54,7 +54,7 @@ class TinyRedis:
         return self.__r.lrange(key, start=start_index, end=stop_index)
 
     def sadd(self, key, *members):
-        return self.__r.sadd(key, members)
+        return self.__r.sadd(key, *members)
 
     def smembers(self, key):
         return self.__r.smembers(key)
@@ -76,7 +76,7 @@ class TinyRedis:
 
 
 def install_redis(install_path='',
-                  download_url='http://download.redis.io/releases/redis-5.0.0.tar.gz',
+                  download_url='http://download.redis.io/releases/redis-5.0.3.tar.gz',
                   port=6384, verbose=True):
     import tarfile
     import tempfile
@@ -84,78 +84,86 @@ def install_redis(install_path='',
     import urllib.request as url_request
 
     from redis.exceptions import ConnectionError
-
     from util.fs import split3
 
-    if not install_path:
-        install_path = tempfile.mkdtemp(prefix='redis{}'.format(port))
+    proceed_install = True
+    r = redis.Redis(host='localhost', port=port)
+    try:
+        r.ping()
+        proceed_install = False
+    except ConnectionError:
+        pass
 
-    run_server = True
-    if not os.path.exists(install_path):
-        working_dir, redis_name, _ = split3(install_path)
-        redis_tgzfile = os.path.join(working_dir, 'redis.tar.gz')
+    if proceed_install:
+        if not install_path:
+            tmp_dir = tempfile.mkdtemp(prefix='redis{}'.format(port))
+            install_path = os.path.join(tmp_dir, 'redis')
 
-        if verbose:
-            print('Downloading Redis...')
+        if not os.path.exists(install_path):
+            working_dir, redis_name, _ = split3(install_path)
+            redis_tgzfile = os.path.join(working_dir, 'redis.tar.gz')
 
-        try:
-            with url_request.urlopen(download_url) as resp, \
-                    open(redis_tgzfile, 'wb') as out_file:
-                data = resp.read()  # a `bytes` object
-                out_file.write(data)
-        except HTTPError as e:
             if verbose:
-                if e.code == 404:
-                    print(
-                        'The provided URL seems to be broken. Please find a URL for Redis')
-                else:
-                    print('Error code: ', e.code)
-            raise ValueError(e)
-        except URLError as e:
+                print('Downloading Redis...')
+
+            try:
+                with url_request.urlopen(download_url) as resp, \
+                        open(redis_tgzfile, 'wb') as out_file:
+                    data = resp.read()  # a `bytes` object
+                    out_file.write(data)
+            except HTTPError as e:
+                if verbose:
+                    if e.code == 404:
+                        print(
+                            'The provided URL seems to be broken. Please find a URL for Redis')
+                    else:
+                        print('Error code: ', e.code)
+                raise ValueError(e)
+            except URLError as e:
+                if verbose:
+                    print('URL error: ', e.reason)
+                raise ValueError(e)
+
             if verbose:
-                print('URL error: ', e.reason)
-            raise ValueError(e)
+                print('Extracting Redis...')
+            with tarfile.open(redis_tgzfile, 'r:gz') as tgz_ref:
+                tgz_ref.extractall(working_dir)
 
-        if verbose:
-            print('Extracting Redis...')
-        with tarfile.open(redis_tgzfile, 'r:gz') as tgz_ref:
-            tgz_ref.extractall(working_dir)
+            os.remove(redis_tgzfile)
 
-        os.remove(redis_tgzfile)
+            redis_dir = None
+            for f in os.listdir(working_dir):
+                if f.lower().startswith('redis'):
+                    redis_dir = os.path.join(working_dir, f)
+                    break
 
-        redis_dir = None
-        for f in os.listdir(working_dir):
-            if f.lower().startswith('redis'):
-                redis_dir = os.path.join(working_dir, f)
-                break
+            if not redis_dir:
+                raise ValueError()
 
-        if not redis_dir:
-            raise ValueError()
+            os.rename(redis_dir, os.path.join(working_dir, redis_name))
 
-        os.rename(redis_dir, os.path.join(working_dir, redis_name))
+            if verbose:
+                print('Installing Redis...')
 
-        if verbose:
-            print('Installing Redis...')
+            redis_conf_file = os.path.join(install_path, 'redis.conf')
+            subprocess.call(
+                ['sed', '-i', 's/tcp-backlog [0-9]\+$/tcp-backlog 3000/g', redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/daemonize no$/daemonize yes/g', redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/pidfile .*\.pid$/pidfile redis_{}.pid/g'.format(port), redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/port 6379/port {}/g'.format(port), redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/save 900 1/save 15000 1/g', redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/save 300 10/#save 300 10/g', redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/save 60 10000/#save 60 10000/g', redis_conf_file])
+            subprocess.call(
+                ['sed', '-i', 's/logfile ""/logfile "redis_{}.log"/g'.format(port), redis_conf_file])
+            subprocess.call(['make'], cwd=install_path)
 
-        redis_conf_file = os.path.join(install_path, 'redis.conf')
-        subprocess.call(
-            ['sed', '-i', 's/tcp-backlog [0-9]\+$/tcp-backlog 3000/g', redis_conf_file])
-        subprocess.call(
-            ['sed', '-i', 's/daemonize no$/daemonize yes/g', redis_conf_file])
-        subprocess.call(
-            ['sed', '-i', 's/pidfile .*\.pid$/pidfile redis_{}.pid/g'.format(port), redis_conf_file])
-        subprocess.call(
-            ['sed', '-i', 's/port 6379/port {port}/g'.format(port), redis_conf_file])
-        subprocess.call(['make'], cwd=install_path)
-    else:
-        r = redis.Redis(host='localhost', port=port)
-        try:
-            r.ping()
-            run_server = False
-        except ConnectionError:
-            pass
-
-    if run_server:
         if verbose:
             print('Running Redis on port {}...'.format(port))
         subprocess.call(['src/redis-server', 'redis.conf'], cwd=install_path)
@@ -166,11 +174,16 @@ def install_redis(install_path='',
 def uninstall_redis(install_path, verbose=True):
     import shutil
 
+    if not install_path or not os.path.exists(install_path):
+        if verbose:
+            print("Cannot uninstall because the installation path does not exist!")
+        return
+
     redis_conf_file = os.path.join(install_path, 'redis.conf')
     p = subprocess.Popen(['grep', '-E', '^port [0-9]+$', redis_conf_file], stdout=subprocess.PIPE)
     out, _ = p.communicate()
 
-    port = out.split()[1]
+    port = out.split()[1].decode('utf-8')
 
     if verbose:
         print("Shutting down Redis on port {}...".format(port))
