@@ -1,15 +1,36 @@
-glove:
-  300d:
-    url: 'http://nlp.stanford.edu/data/glove.840B.300d.zip'
-  100d:
-    url: 'http://nlp.stanford.edu/data/glove.6B.zip'
+# word2vec, glove840B, glove6B_200, glove6B_100, glove6B_50, fastText, hub_word2vec
+
+glove6B_50:
+  url: "http://magnitude.plasticity.ai/glove/medium/glove.6B.50d.magnitude"
+  dim: 50
+  src_type: "magnitude"
+
+glove6B_100:
+  url: "http://magnitude.plasticity.ai/glove/medium/glove.6B.100d.magnitude"
+  dim: 100
+  src_type: "magnitude"
+
+glove6B_200:
+  url: "http://magnitude.plasticity.ai/glove/medium/glove.6B.200d.magnitude"
+  dim: 200
+  src_type: "magnitude"
+
+glove840B:
+  url: "http://magnitude.plasticity.ai/glove/medium/glove.840B.300d.magnitude"
+  dim: 300
+  src_type: "magnitude"
 
 word2vec:
-  300d:
-    url: 'https://bit.ly/w2v-mirror'
+  url: "http://magnitude.plasticity.ai/word2vec/medium/GoogleNews-vectors-negative300.magnitude"
+  dim: 300
+  src_type: "magnitude"
 
-tf_word2vec:
-  250d:
-    module_url: "https://tfhub.dev/google/Wiki-words-250/1"
-  500d:
-    module_url: "https://tfhub.dev/google/Wiki-words-500/1"
+fastText:
+  url: "http://magnitude.plasticity.ai/fasttext/medium/wiki-news-300d-1M-subword.magnitude"
+  dim: 300
+  src_type: "magnitude"
+
+hub_word2vec:
+  url: "https://tfhub.dev/google/Wiki-words-500/1"
+  dim: 500
+  src_type: "tfhub"

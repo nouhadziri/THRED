@@ -3,8 +3,8 @@ learning_rate: 0.0002
 max_gradient_norm: 5.0
 vocab_size: 50000
 num_layers: 2
-embedding_size: 300
-embedding_type: 'glove'
+residual: True
+embedding_type: 'fastText'
 cell_type: 'gru'
 encoder_type: 'bi'
 hidden_units: 800
@@ -18,7 +18,8 @@ src_max_len: 30
 tgt_max_len: 30
 
 num_train_epochs: 15
-steps_per_stats: 100
+steps_per_stats: 10
+steps_per_eval: 3000
 # Early Stopping parameters, inspired from VHRED impl
 patience: 50
 degrade_threshold: 1.003
@@ -26,13 +27,15 @@ degrade_threshold: 1.003
 encoder_dropout_rate: 0.2
 decoder_dropout_rate: 0.2
 
-scheduled_sampling_prob: 0.0
 decoding_length_factor: 2.0
 
 learning_rate_decay_scheme: luong234
 #start_decay_step: 0
 #decay_steps: 10000
 #decay_factor: 0.5
+
+scheduled_sampling_prob: 0.0
+scheduled_sampling_decay_scheme: luong234
 
 beam_width: 5
 length_penalty_weight: 1.0

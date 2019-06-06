@@ -1,3 +1,5 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5a6cfaad36294d27a8479b227627f1c7)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nouhadziri/Dialogue-Generation-ANA&amp;utm_campaign=Badge_Grade)
+
 This repository hosts the implementation of the paper "[Augmenting Neural Response Generation with Context-Aware Topical
 Attention](https://arxiv.org/abs/1811.01063)".
 
@@ -5,49 +7,56 @@ Attention](https://arxiv.org/abs/1811.01063)".
 THRED is a multi-turn response generation system intended to produce contextual and topic-aware responses.
 The codebase is evolved from the Tensorflow [NMT](https://github.com/tensorflow/nmt) repository.
 
+__TL;DR__ Steps to create a dialogue agent using this framework:
+ 1. Download the Reddit Conversation Corpus from [here](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.topicals.tgz) (7.8GB file containing triples extracted from Reddit). Please report errors/inappropriate content in the data [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
+ 2. Install the dependencies using `conda env create -f thred_env.yml` (To use `pip`, see [Dependencies](#dependencies))
+ 3. Train the model using the following command (pretrained models will be published soon). Note that `MODEL_DIR` is a directory that the model will be saved into. We recommend to train on at least 2 GPUs, otherwise you can reduce the data size (by omitting conversations from the training file) and the model size (by modifying the config file).
+ ```
+ python -m thred --mode train --config conf/thred_medium.yml --model_dir <MODEL_DIR> \
+--train_data <TRAIN_DATA> --dev_data <DEV_DATA> --test_data <TEST_DATA>
+ ```
+ 4. Chat with the trained model using:
+ ```
+ python -m thred --mode interactive --model_dir <MODEL_DIR>
+ ```
+
 ## Dependencies
-- Python >= 3.5
-- Tensorflow >= 1.4.0
-- Tensorflow-Hub
-- SpaCy
-- Gensim
-- PyYAML
-- tqdm
-- redis<sup>1</sup>
-- mistune<sup>1</sup>
-- emot<sup>1</sup>
-- prompt-toolkit<sup>2</sup>
+ - Python >= 3.5 (Recommended: 3.6)
+ - Tensorflow == 1.12.0
+ - Tensorflow-Hub
+ - SpaCy >= 2.1.0
+ - pymagnitude
+ - tqdm
+ - redis<sup>1</sup>
+ - mistune<sup>1</sup>
+ - emot<sup>1</sup>
+ - Gensim<sup>1</sup>
+ - prompt-toolkit<sup>2</sup>
 
 <sup>1</sup><sub><sup>*packages required only for parsing and cleaning the Reddit data.*</sup></sub>
 <sup>2</sup><sub><sup>*used only for testing dialogue models in command-line interactive mode*</sup></sub>
  
 To install the dependencies using `pip`, run `pip install -r requirements`.
-And for Anaconda, run `conda env create -f thred_env.yml` (recommended). 
+And for Anaconda, run `conda env create -f thred_env.yml` (recommended).
+Once done with the dependencies, run `pip install -e .` to install the thred package. 
 
 ## Data
-Our Reddit dataset is collected from 95 selected subreddits (listed [here](corpora/reddit/subreddit_whitelist.txt)).
-We processed Reddit for a 12 month-period ranging from December 2016 until December 2017 (excluding June and July; we utilized these two months to train an LDA model). Please see [here](corpora/reddit) for the details of how the Reddit dataset is built including pre-processing and cleaning the raw Reddit files.
+Our Reddit dataset, which we call Reddit Conversation Corpus (RCC), is collected from 95 selected subreddits (listed [here](thred/corpora/reddit/subreddit_whitelist.txt)).
+We processed Reddit for a 20 month-period ranging from November 2016 until August 2018 (excluding June 2017 and July 2017; we utilized these two months along with the October 2016 data to train an LDA model). Please see [here](thred/corpora/reddit) for the details of how the Reddit dataset is built including pre-processing and cleaning the raw Reddit files. The following table summarizes the RCC information:
 
-In the data files, each line corresponds to a single conversation where utterances are tab-separated. Topic words appear after the last utterance by a delimiter '  |  ' (a vertical bar preceding and trailing two whitespaces).
+| Corpus    	        | #train| #dev  | #test | Download | Download with topic words|
+|----------	            |:-----:|:-----:|:-----:|:-----------|:-----------|
+| 3 turns per line   	| 9.2M  | 508K  | 406K  | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.tgz) (1.9GB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.topicals.tgz) (7.8GB)
+| 4 turns per line	    | 4M    | 223K  | 178K  | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_4turns.tgz)  (1.1GB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_4turns.topicals.tgz) (3.7GB)
+| 5 turns per line	    | 1.8M  | 100K  | 80K   | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_5turns.tgz) (609.7MB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_5turns.topicals.tgz) (1.8GB)
 
-#### Embeddings
-First, pre-trained word embedding models should be downloaded by running the following Python script:
-```bash
-export PYTHONPATH="."; python util/get_embed.py
-```
-The script downloads and extracts the [GloVe](https://nlp.stanford.edu/projects/glove/) embeddings file.
-The output is stored in the direcctory `workspace/embeddings`.
-Additionally, the following options are available:
-<pre>
-    -e, --embedding_type        glove or word2vec (default: glove)
-    -d, --dimensions            #dimensions of embedding vectors (default: 300)
-    -f, --embedding_file        In case of using a non-default embedding, 
-                                you can provide an embedding file loadable by Gensim (default: None)
-</pre>       
+In the data files, each line corresponds to a single conversation where utterances are TAB-separated. The topic words appear after the last utterance separated also by a TAB.
 
-In the model config files (explained below), the default embedding types can be either of the following: `glove`, `word2vec`, and `tf_word2vec`.
-Note that `tf_word2vec` refers to the pre-trained word2vec provided in Tensorflow Hub [Wiki words](https://tfhub.dev/google/Wiki-words-500-with-normalization/1).
-**If you intend to use the embeddings from Tensorflow Hub, there is no need to run the above command.**  
+Note that the 3-turns/4-turns/5-turns files contain similar content albeit with different number of utterances per line. They are all extracted from the same source. If you found any error or any inappropriate utterance in the data, please report your concerns [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
+
+### Embeddings
+In the model config files (i.e., the YAML files in [conf](conf)), the embedding types can be either of the following: `glove840B`, `fastText`, `word2vec`, and `hub_word2vec`. For handling the pre-trained embedding vectors, we leverage [Pymagnitude](https://github.com/plasticityai/magnitude/) and [Tensorflow-Hub](https://tfhub.dev/).
+Note that you can also use `random300` (300 refers to the dimension of embedding vectors and can be replaced by any arbitrary value) to learn vectors during training of the response generation models. The settings related to embedding models are provided in [word_embeddings.yml](conf/word_embeddings.yml). 
 
 
 ## Train
@@ -90,7 +99,7 @@ The downloaded file should be uncompressed and passed to the program via `--lda_
 
 ## Citation
 Please cite the following paper if you used our work in your research:
-```
+```text
 @article{dziri2018augmenting,
   title={Augmenting Neural Response Generation with Context-Aware Topical Attention},
   author={Dziri, Nouha and Kamalloo, Ehsan and Mathewson, Kory W and Zaiane, Osmar R},

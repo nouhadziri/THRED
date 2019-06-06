@@ -2,13 +2,14 @@ type: 'thred'
 learning_rate: 0.0002
 max_gradient_norm: 5.0
 vocab_size: 60000
-embedding_size: 300
-embedding_type: 'glove'
+num_layers: 4
+residual: True
+embedding_type: 'fastText'
 cell_type: 'gru'
-context_direction: 'forward'
 encoder_type: 'bi'
-hidden_units: 1024
-attention_type: 'bahdanau'
+context_type: 'bi'
+hidden_units: 512
+attention_type: 'normed_bahdanau'
 optimizer: 'adam'
 batch_size: 128
 
@@ -17,12 +18,11 @@ topic_words_per_utterance: 50
 src_max_len: 30
 tgt_max_len: 30
 
-num_pretrain_turns: 2
 num_turns: 3
 
-num_pretrain_epochs: 0
 num_train_epochs: 15
-steps_per_stats: 100
+steps_per_stats: 10
+steps_per_eval: 3000
 # Early Stopping parameters, inspired from VHRED impl
 patience: 50
 degrade_threshold: 1.003

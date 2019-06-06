@@ -3,8 +3,8 @@ learning_rate: 0.0002
 max_gradient_norm: 5.0
 vocab_size: 45000
 num_layers: 1
-embedding_size: 300
-embedding_type: 'glove'
+residual: False
+embedding_type: 'fastText'
 cell_type: 'gru'
 encoder_type: 'uni'
 hidden_units: 1024
@@ -18,7 +18,8 @@ src_max_len: 30
 tgt_max_len: 30
 
 num_train_epochs: 10
-steps_per_stats: 100
+steps_per_stats: 10
+steps_per_eval: 3000
 # Early Stopping parameters, inspired from VHRED impl
 patience: 50
 degrade_threshold: 1.003

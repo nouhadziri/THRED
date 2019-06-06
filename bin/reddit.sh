@@ -63,11 +63,6 @@ do
 done
 
 # Check requirements
-if [ -z "$OUT_DIR" ]; then
-	echo -e "${RED}output directory not specified. pass it using: -o OR --out-dir${NORMAL}"
-	exit 1
-fi
-
 if [ -z "$COMMENTS_FILE" ] && [ -z "$SUBMISSIONS_FILE" ]
 then
 	echo -e "${RED}An input compressed file must be provided either using -c (for comments) or -s (for submissions)${NORMAL}"
@@ -88,9 +83,9 @@ if [ "$ext" != "bz2" ] && [ "$ext" != "xz" ] && [ $ext != "bzip2" ]; then
 fi
 
 PYTHON_CMD="python3"
-cmd_check=`command -v python3`
+cmd_check=$(command -v python3)
 if [ ! -z "$cmd_check" ]; then
-    version=`python3 --version 2>&1 | cut -f2 -d ' '`
+    version=$(python3 --version 2>&1 | cut -f2 -d ' ')
     version=${version%%.*}
     if [ "$version" != "3" ]; then
         PYTHON_CMD=""
@@ -99,7 +94,7 @@ fi
 
 if [ -z "$PYTHON_CMD" ]; then
     command -v python >/dev/null 2>&1 || { echo -e "${RED}Python command (version 3) not found${NORMAL}"; exit 1; }
-    version=`python --version 2>&1 | cut -f2 -d ' '`
+    version=$(python --version 2>&1 | cut -f2 -d ' ')
     version=${version%%.*}
     if [ "$version" != "3" ]; then
         echo -e "${RED}Make sure you have a Python version 3 command in the PATH${NORMAL}"
@@ -108,9 +103,9 @@ if [ -z "$PYTHON_CMD" ]; then
     PYTHON_CMD="python"
 fi
 
-if [ ! -f "corpora/reddit/reddit_parser.py" ]
+if [ ! -f "thred/corpora/reddit/reddit_parser.py" ]
 then
-	if [ -f "../corpora/reddit/reddit_parser.py" ]
+	if [ -f "../thred/corpora/reddit/reddit_parser.py" ]
 	then
 		cd ..
 	else
@@ -152,7 +147,7 @@ if [ ! -z "$SKIP_LINES" ]; then
 fi
 
 if [ -z "$SUBREDDIT_FILE" ]; then
-	SUBREDDIT_FILE="corpora/reddit/subreddit_whitelist.txt"
+	SUBREDDIT_FILE="thred/corpora/reddit/subreddit_whitelist.txt"
 fi
 
 if [ -f "$LOG_FILE" ]; then
@@ -171,6 +166,11 @@ then
     else
         COMMENTS_ARG="--comments_file $COMMENTS_FILE"
     fi
+
+    # finding the containing directory is taken from https://stackoverflow.com/a/40700120
+    if [ -z "$OUT_DIR" ]; then
+        OUT_DIR="$(dirname -- "$(readlink -f -- "$COMMENTS_FILE")")"
+    fi
 else
     if [ "$ext" == "xz" ]; then
         SUBMISSIONS_ARG="--submissions_stream"
@@ -178,17 +178,21 @@ else
     else
         SUBMISSIONS_ARG="--submissions_file $SUBMISSIONS_FILE"
     fi
+
+    if [ -z "$OUT_DIR" ]; then
+        OUT_DIR="$(dirname -- "$(readlink -f -- "$SUBMISSIONS_FILE")")"
+    fi
 fi
 
 export PYTHONPATH="."
 
-rnd=`date | md5sum | head -c 4`
+rnd=$(date | md5sum | head -c 4)
 crash_file=".reddit_crash.$rnd"
 
 if [ "$ext" == "xz" ]; then
-    nohup sh -c "xz -d $XZ_FILE -c | $PYTHON_CMD -u corpora/reddit/reddit_parser.py --out_dir $OUT_DIR --output_prefix $filename --subreddits $SUBREDDIT_FILE -r $crash_file $COMMENTS_ARG $SUBMISSIONS_ARG $BATCH_ARG $SKIP_ARG $MAXW_ARG $MAXC_ARG $MINW_ARG $MINC_ARG" >$LOG_FILE 2>&1 < /dev/null &
+    nohup sh -c "xz -d $XZ_FILE -c | $PYTHON_CMD -u thred/corpora/reddit/reddit_parser.py --out_dir $OUT_DIR --output_prefix $filename --subreddits $SUBREDDIT_FILE -r $crash_file $COMMENTS_ARG $SUBMISSIONS_ARG $BATCH_ARG $SKIP_ARG $MAXW_ARG $MAXC_ARG $MINW_ARG $MINC_ARG" >$LOG_FILE 2>&1 < /dev/null &
 else
-    nohup $PYTHON_CMD -u corpora/reddit/reddit_parser.py --out_dir $OUT_DIR --output_prefix $filename --subreddits $SUBREDDIT_FILE -r $crash_file $COMMENTS_ARG $SUBMISSIONS_ARG $BATCH_ARG $SKIP_ARG $MAXW_ARG $MAXC_ARG $MINW_ARG $MINC_ARG >$LOG_FILE 2>&1 < /dev/null &
+    nohup $PYTHON_CMD -u thred/corpora/reddit/reddit_parser.py --out_dir $OUT_DIR --output_prefix $filename --subreddits $SUBREDDIT_FILE -r $crash_file $COMMENTS_ARG $SUBMISSIONS_ARG $BATCH_ARG $SKIP_ARG $MAXW_ARG $MAXC_ARG $MINW_ARG $MINC_ARG >$LOG_FILE 2>&1 < /dev/null &
 fi
 
 echo -e "${BOLD}Crash file set to ${crash_file}${NORMAL}"
