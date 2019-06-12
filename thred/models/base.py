@@ -14,8 +14,8 @@ from ..util.embed import EmbeddingUtil
 
 class AbstractModel(object):
 
-    def init_embeddings(self, vocab_file: str, vocab_h5: str, dtype=tf.float32, scope: str = None):
-        reserved_vecs, trainable_vecs, frozen_vecs = EmbeddingUtil.load_vectors(vocab_h5, vocab_file)
+    def init_embeddings(self, vocab_file: str, vocab_pkl: str, dtype=tf.float32, scope: str = None):
+        reserved_vecs, trainable_vecs, frozen_vecs = EmbeddingUtil.load_vectors(vocab_pkl, vocab_file)
 
         with tf.variable_scope(scope or "embeddings", dtype=dtype):
             const_embedding_matrix = tf.constant(frozen_vecs, dtype=dtype)
@@ -164,8 +164,8 @@ class NMTEncoderDecoderWrapper(AbstractEncoderDecoderWrapper):
                                                                   if 'original_vocab_size' in self.config
                                                                   else self.config.vocab_size))
 
-        self.config.vocab_h5 = os.path.join(self.config.model_dir,
-                                            'vocab_{}.h5'.format(self.config.embedding_type))
+        self.config.vocab_pkl = os.path.join(self.config.model_dir,
+                                             'vocab_{}.pkl'.format(self.config.embedding_type))
 
         if 'epoch_step' not in self.config:
             self.config['epoch_step'] = 0
@@ -190,7 +190,7 @@ class NMTEncoderDecoderWrapper(AbstractEncoderDecoderWrapper):
     def _pre_model_creation(self):
         vocab.create_vocabulary(self.config.vocab_file, self.config.train_data, self.config.vocab_size)
         EmbeddingUtil(self.config.embed_conf).build_if_not_exists(
-            self.config.embedding_type, self.config.vocab_h5, self.config.vocab_file)
+            self.config.embedding_type, self.config.vocab_pkl, self.config.vocab_file)
 
         self._vocab_table = vocab.create_vocab_dict(self.config.vocab_file)
         if self.config.vocab_size > len(self._vocab_table):

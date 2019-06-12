@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="thred",
-    version="0.1.0",
+    version="0.1.1",
     author="Nouha Dziri, Ehsan Kamalloo, Kory Mathewson",
     author_email="dziri@cs.ualberta.ca",
     description="Neural Response Generation Framework",
@@ -15,7 +15,6 @@ setup(
     install_requires=['tensorflow_gpu==1.12.0',
                       'tensorflow-hub==0.2.0',
                       'spacy>=2.1.0,<=2.2.0',
-                      'h5py>=2.9.0',
                       'scipy>=1.0.0,<2.0.0',
                       'pymagnitude',
                       'redis',

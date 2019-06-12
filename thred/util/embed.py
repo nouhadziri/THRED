@@ -2,10 +2,9 @@ import collections
 import logging
 import codecs
 from pathlib import Path
-from typing import Type, TypeVar, List
+from typing import Type, TypeVar, List, Dict, Any
 from os import environ, rename
 
-import h5py
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -28,30 +27,32 @@ class EmbeddingFactory:
     def __init__(self, embedding_type: EmbeddingType):
         self._embedding_type = embedding_type
 
-    def build(self, vocab_list: List[str], h5_file: str, **kwargs) -> (List[str], List[str]):
+    def build(self, vocab_list: List[str], **kwargs) -> (List[str], List[str], Dict[str, Dict[str, Any]]):
         """
         :param vocab_list: The vocabulary list built upon the dataset
         :param h5_file: The output h5 file where the embedding vectors will be saved into
         :param kwargs: Additional parameters based on the factory type
         :return A tuple containing the Out-Of-Vocabulary words and In-Vocabulary words
         """
-        pass
+        raise NotImplementedError()
 
 
 class RandomFactory(EmbeddingFactory):
     def __init__(self, embedding_type: EmbeddingType):
         super().__init__(embedding_type)
 
-    def build(self, vocab_list: List[str], h5_file: str, **kwargs) -> (List[str], List[str]):
+    def build(self, vocab_list: List[str], **kwargs) -> (List[str], List[str], Dict[str, Dict[str, Any]]):
         init_weight = kwargs.get('init_weight', 0.1)
 
-        with h5py.File(h5_file, mode="w") as vec_h5:
-            for w in vocab_list:
-                vec = np.random.uniform(-init_weight, init_weight, size=self._embedding_type.dim)
-                vec_h5.create_dataset("{key}/vec".format(key=w), data=vec)
-                vec_h5.create_dataset("{key}/trainable".format(key=w), data=1)
+        vec_dict = {}
+        for w in vocab_list:
+            vec = np.random.uniform(-init_weight, init_weight, size=self._embedding_type.dim)
+            vec_dict[w] = {
+                "vec": vec,
+                "trainable": True
+            }
 
-        return vocab_list, []
+        return vocab_list, [], vec_dict
 
 
 class MagnitudeFactory(EmbeddingFactory):
@@ -70,21 +71,24 @@ class MagnitudeFactory(EmbeddingFactory):
         logger.info('  Loading Magnitude module...')
         self._magnitude_vecs = Magnitude(self._embed_file)
 
-    def build(self, vocab_list: List[str], h5_file: Path, **kwargs) -> (List[str], List[str]):
+    def build(self, vocab_list: List[str], **kwargs) -> (List[str], List[str], Dict[str, Dict[str, Any]]):
         oov, iov = [], []
-        with h5py.File(h5_file, mode="w") as vec_h5:
-            for w in vocab_list:
-                is_oov = w not in self._magnitude_vecs
-                vec = self._magnitude_vecs.query(w)
-                vec_h5.create_dataset("{key}/vec".format(key=w), data=vec)
-                vec_h5.create_dataset("{key}/trainable".format(key=w), data=1 if is_oov else 0)
 
-                if is_oov:
-                    oov.append(w)
-                else:
-                    iov.append(w)
+        vec_dict = {}
+        for w in vocab_list:
+            is_oov = w not in self._magnitude_vecs
+            vec = self._magnitude_vecs.query(w)
+            vec_dict[w] = {
+                "vec": vec,
+                "trainable": is_oov
+            }
 
-        return oov, iov
+            if is_oov:
+                oov.append(w)
+            else:
+                iov.append(w)
+
+        return oov, iov, vec_dict
 
 
 class TfHubFactory(EmbeddingFactory):
@@ -93,7 +97,7 @@ class TfHubFactory(EmbeddingFactory):
     def __init__(self, embedding_type: EmbeddingType):
         super(TfHubFactory, self).__init__(embedding_type)
 
-    def build(self, vocab_list: List[str], h5_file: Path, **kwargs) -> (List[str], List[str]):
+    def build(self, vocab_list: List[str], **kwargs) -> (List[str], List[str], Dict[str, Dict[str, Any]]):
         page_size = kwargs.get('page_size', 15000)
         init_weight = kwargs.get('init_weight', 0.1)
 
@@ -103,33 +107,35 @@ class TfHubFactory(EmbeddingFactory):
 
         num_pages = len(vocab_list) // page_size
         oov, iov = [], []
-        with h5py.File(h5_file, mode='w') as vec_h5:
-            with tf.Session() as sess:
-                sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
+        vec_dict = {}
+        with tf.Session() as sess:
+            sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
 
-                for i in range(num_pages + 1):
-                    lb = i * page_size
-                    ub = min((i + 1) * page_size, len(vocab_list))
+            for i in range(num_pages + 1):
+                lb = i * page_size
+                ub = min((i + 1) * page_size, len(vocab_list))
 
-                    page = vocab_list[lb:ub]
-                    embedding_vectors = sess.run(embedder(page))
+                page = vocab_list[lb:ub]
+                embedding_vectors = sess.run(embedder(page))
 
-                    for i, word in enumerate(page):
-                        is_oov = sum(embedding_vectors[i]) == 0
-                        if is_oov:
-                            vec = np.random.uniform(-init_weight, init_weight, self._embedding_type.dim)
-                        else:
-                            vec = embedding_vectors[i]
+                for i, word in enumerate(page):
+                    is_oov = sum(embedding_vectors[i]) == 0
+                    if is_oov:
+                        vec = np.random.uniform(-init_weight, init_weight, self._embedding_type.dim)
+                    else:
+                        vec = embedding_vectors[i]
 
-                        vec_h5.create_dataset("{key}/vec".format(key=word), data=vec)
-                        vec_h5.create_dataset("{key}/trainable".format(key=word), data=1 if is_oov else 0)
+                    vec_dict[word] = {
+                        "vec": vec,
+                        "trainable": is_oov
+                    }
 
-                        if is_oov:
-                            oov.append(word)
-                        else:
-                            iov.append(word)
+                    if is_oov:
+                        oov.append(word)
+                    else:
+                        iov.append(word)
 
-        return oov, iov
+        return oov, iov, vec_dict
 
 
 class EmbeddingUtil:
@@ -150,25 +156,25 @@ class EmbeddingUtil:
                 "Unknown source type '{}' defined in the embedding config file".format(embedding_type.src_type))
 
     @classmethod
-    def load_vectors(cls: Type[T], vocab_h5: str, vocab_file: str) -> (np.ndarray, np.ndarray, np.ndarray):
+    def load_vectors(cls: Type[T], vocab_pkl: str, vocab_file: str) -> (np.ndarray, np.ndarray, np.ndarray):
         vocab_list, _ = vocab.load_vocab(vocab_file)
 
         reserved_words, trainables, frozens = [], [], []
-        with h5py.File(vocab_h5, mode='r') as vec_h5:
-            for w in vocab_list:
-                vec = vec_h5["{key}/vec".format(key=w)][...]
-                is_trainable = vec_h5["{key}/trainable".format(key=w)][...]
-                if w in vocab.RESERVED_WORDS:
-                    reserved_words.append(vec)
-                if is_trainable:
-                    trainables.append(vec)
-                else:
-                    frozens.append(vec)
+        vec_dict = fs.load_obj(vocab_pkl)
+        for w in vocab_list:
+            vec = vec_dict[w]["vec"]
+            is_trainable = vec_dict[w]["trainable"]
+            if w in vocab.RESERVED_WORDS:
+                reserved_words.append(vec)
+            if is_trainable:
+                trainables.append(vec)
+            else:
+                frozens.append(vec)
 
         return np.asarray(reserved_words), np.asarray(trainables), np.asarray(frozens)
 
-    def build_if_not_exists(self, embedding_type: str, vocab_h5: str, vocab_file: str, overwrite: bool=False):
-        if Path(vocab_h5).exists() and not overwrite:
+    def build_if_not_exists(self, embedding_type: str, vocab_pkl: str, vocab_file: str, overwrite: bool=False):
+        if Path(vocab_pkl).exists() and not overwrite:
             return
 
         sw = Stopwatch()
@@ -185,7 +191,8 @@ class EmbeddingUtil:
             _embed_type = EmbeddingType(embedding_type, e["url"], e["dim"], e["src_type"])
 
         vocab_list, _ = vocab.load_vocab(vocab_file)
-        oov, iov = EmbeddingUtil.from_type(_embed_type).build(vocab_list, vocab_h5)
+        oov, iov, vec_dict = EmbeddingUtil.from_type(_embed_type).build(vocab_list)
+        fs.save_obj(vec_dict, vocab_pkl)
 
         rename(vocab_file, fs.replace_ext(vocab_file, 'tf'))
         with codecs.getwriter("utf-8")(open(vocab_file, "wb")) as writer:

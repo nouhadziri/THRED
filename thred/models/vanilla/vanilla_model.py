@@ -57,7 +57,7 @@ class VanillaSeq2SeqModel(AbstractModel):
         log.print_out("# number of gpus %d" % self.num_gpus)
 
         with tf.variable_scope(scope or 'seq2seq_graph', dtype=self.dtype):
-            self.init_embeddings(params.vocab_file, params.vocab_h5, scope=scope)
+            self.init_embeddings(params.vocab_file, params.vocab_pkl, scope=scope)
 
             with tf.variable_scope(scope or "build_network"):
                 with tf.variable_scope("decoder/output_projection"):

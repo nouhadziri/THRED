@@ -40,7 +40,7 @@ class HierarchichalSeq2SeqModel(AbstractModel):
         self.iterator = iterator
 
         with tf.variable_scope(scope or 'hred_graph', dtype=dtype):
-            self.init_embeddings(params.vocab_file, params.vocab_h5, scope=scope)
+            self.init_embeddings(params.vocab_file, params.vocab_pkl, scope=scope)
 
             encoder_keep_prob, decoder_keep_prob = self.get_keep_probs(mode, params)  # this is for dropout
             if mode == tf.contrib.learn.ModeKeys.TRAIN:

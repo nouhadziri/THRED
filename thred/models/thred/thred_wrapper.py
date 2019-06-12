@@ -24,7 +24,7 @@ class TopicalHierarchicalEncoderDecoder(BaseHierarchicalEncoderDecoder):
         self._vocab_table, self.__topic_vocab_table = topical_base.initialize_vocabulary(self.config)
 
         EmbeddingUtil(self.config.embed_conf).build_if_not_exists(
-            self.config.embedding_type, self.config.vocab_h5, self.config.vocab_file)
+            self.config.embedding_type, self.config.vocab_pkl, self.config.vocab_file)
 
         if 'original_vocab_size' not in self.config:
             self.config['original_vocab_size'] = self.config.vocab_size

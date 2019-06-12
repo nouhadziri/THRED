@@ -40,7 +40,7 @@ class TopicAwareHierarchicalSeq2SeqModel(AbstractModel):
         self.iterator = iterator
 
         with tf.variable_scope(scope or 'thred_graph', dtype=self.dtype):
-            self.init_embeddings(params.vocab_file, params.vocab_h5, scope=scope)
+            self.init_embeddings(params.vocab_file, params.vocab_pkl, scope=scope)
 
             encoder_keep_prob, decoder_keep_prob = self.get_keep_probs(mode, params)
             if mode == tf.contrib.learn.ModeKeys.TRAIN:

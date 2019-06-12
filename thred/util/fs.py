@@ -37,7 +37,7 @@ def get_parent_dir(path):
 
 
 def get_project_root_dir():
-    return get_parent_dir(get_current_dir(__file__))
+    return get_parent_dir(get_parent_dir(get_current_dir(__file__)))
 
 
 def replace_ext(path, new_ext):
