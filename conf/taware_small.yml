@@ -1,7 +1,7 @@
 type: 'topic_aware'
 learning_rate: 0.0002
 max_gradient_norm: 5.0
-vocab_size: 45000
+vocab_size: 40000
 num_layers: 1
 residual: False
 embedding_type: 'fastText'
@@ -35,11 +35,12 @@ learning_rate_decay_scheme: luong234
 #decay_factor: 0.5
 
 scheduled_sampling_prob: 0.0
-scheduled_sampling_decay_scheme: luong234
+scheduled_sampling_decay_scheme: none
 
 beam_width: 5
-length_penalty_weight: 0.8
-infer_batch_size: 256
+length_penalty_weight: 1.0
+sampling_temperature: 0.0
+infer_batch_size: 128
 
 log_device: False
 

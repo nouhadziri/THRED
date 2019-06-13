@@ -8,7 +8,7 @@ embedding_type: 'glove840B'
 cell_type: 'gru'
 encoder_type: 'uni'
 context_type: 'uni'
-hidden_units: 700
+hidden_units: 512
 optimizer: 'adam'
 batch_size: 64
 

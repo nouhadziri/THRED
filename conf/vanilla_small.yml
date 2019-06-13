@@ -2,7 +2,7 @@ type: vanilla
 learning_rate: 0.0002
 max_gradient_norm: 5.0
 vocab_size: 40000
-num_layers: 1
+num_layers: 2
 residual: False
 embedding_type: 'fastText'
 cell_type: 'lstm'

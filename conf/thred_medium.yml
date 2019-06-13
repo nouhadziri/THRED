@@ -1,7 +1,7 @@
 type: 'thred'
 learning_rate: 0.0002
 max_gradient_norm: 5.0
-vocab_size: 45000
+vocab_size: 40000
 num_layers: 2
 residual: True
 embedding_type: 'hub_word2vec'
@@ -20,7 +20,7 @@ tgt_max_len: 30
 
 num_turns: 3
 
-num_train_epochs: 18
+num_train_epochs: 15
 steps_per_stats: 10
 steps_per_eval: 3000
 # Early Stopping parameters, inspired from VHRED impl
