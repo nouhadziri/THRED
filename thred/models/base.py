@@ -404,7 +404,7 @@ class NMTEncoderDecoderWrapper(AbstractEncoderDecoderWrapper):
 
         with tf.Session(
                 config=model_helper.get_config_proto(self.config.log_device), graph=infer_model.graph) as sess:
-            latest_ckpt = tf.train.latest_checkpoint(self.config.model_dir)
+            latest_ckpt = tf.train.latest_checkpoint(self.config.get_infer_model_dir())
             loaded_infer_model = model_helper.load_model(
                 infer_model.model, latest_ckpt, sess, "infer")
 

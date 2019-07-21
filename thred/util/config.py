@@ -1,6 +1,6 @@
-import codecs
 import os
 import shutil
+from pathlib import Path
 
 import yaml
 
@@ -70,6 +70,8 @@ class Config(dict):
         with open(config_file, 'r') as file:
             model_args = yaml.safe_load(file)
 
+        self._update_relative_paths(model_args)
+
         return model_args
 
     def get_infer_model_dir(self):
@@ -83,30 +85,60 @@ class Config(dict):
         return False
 
     def save(self):
-        hparams_file = os.path.join(self.model_dir, "{}_config.yml".format(fs.file_name(self.config)))
+        hparams_file = Path(self.model_dir) / "{}_config.yml".format(fs.file_name(self.config))
         log.print_out("  Saving config to {}".format(hparams_file))
 
-        to_dump_dict = dict(self.__dict__)
-        if to_dump_dict['train_data']:
-            to_dump_dict['train_data'] = os.path.abspath(to_dump_dict['train_data'])
-        if to_dump_dict['test_data']:
-            to_dump_dict['test_data'] = os.path.abspath(to_dump_dict['test_data'])
-        if to_dump_dict['dev_data']:
-            to_dump_dict['dev_data'] = os.path.abspath(to_dump_dict['dev_data'])
-        if to_dump_dict['vocab_file']:
-            to_dump_dict['vocab_file'] = os.path.abspath(to_dump_dict['vocab_file'])
+        config_dict = dict(self.__dict__)
 
-        with codecs.getwriter("utf-8")(open(hparams_file, "wb")) as f:
-            yaml.dump(to_dump_dict, f, default_flow_style=False)
-            # f.write(json.dumps(self.__dict__, indent=2))
+        # absolute paths
+        if config_dict['train_data']:
+            config_dict['train_data'] = Path(config_dict['train_data']).absolute().as_posix()
+        if config_dict['test_data']:
+            config_dict['test_data'] = Path(config_dict['test_data']).absolute().as_posix()
+        if config_dict['dev_data']:
+            config_dict['dev_data'] = Path(config_dict['dev_data']).absolute().as_posix()
+
+        # relative paths
+        if config_dict['vocab_file']:
+            config_dict['vocab_file'] = Path(config_dict['vocab_file']).name
+        if config_dict['vocab_pkl']:
+            config_dict['vocab_pkl'] = Path(config_dict['vocab_pkl']).name
+        if config_dict['checkpoint_file']:
+            config_dict['checkpoint_file'] = Path(config_dict['checkpoint_file']).name
+        if config_dict.get('topic_vocab_file', ''):
+            config_dict['topic_vocab_file'] = Path(config_dict['topic_vocab_file']).name
+        if config_dict.get('best_dev_ppl_dir', ''):
+            config_dict['best_dev_ppl_dir'] = Path(config_dict['best_dev_ppl_dir']).name
+
+        with hparams_file.open("w", encoding="utf-8") as f:
+            yaml.dump(config_dict, f, default_flow_style=False)
+
+    def _update_relative_paths(self, args):
+        model_path = Path(self["model_dir"])
+        if "vocab_file" in args:
+            args["vocab_file"] = (model_path / args["vocab_file"]).as_posix()
+
+        if "vocab_pkl" in args:
+            args["vocab_pkl"] = (model_path / args["vocab_pkl"]).as_posix()
+
+        if "checkpoint_file" in args:
+            args["checkpoint_file"] = (model_path / args["checkpoint_file"]).as_posix()
+
+        if "topic_vocab_file" in args:
+            args["topic_vocab_file"] = (model_path / args["topic_vocab_file"]).as_posix()
+
+        if "best_dev_ppl_dir" in args:
+            args["best_dev_ppl_dir"] = (model_path / args["best_dev_ppl_dir"]).as_posix()
 
 
 def _cleanup(folder):
     for f in os.listdir(folder):
         file = os.path.join(folder, f)
 
-        if '.ckpt' in f or f.startswith('log_') or f.lower() == 'checkpoint' or f.endswith('.shuf') or f.endswith(
-                '_config.yml'):
+        if '.ckpt' in f or f.startswith('log_') or \
+                f.lower() == 'checkpoint' or \
+                f.endswith('.shuf') or \
+                f.endswith('_config.yml'):
             os.remove(file)
         elif (f.endswith('_log') or f.startswith('best_')) and os.path.isdir(file):
             shutil.rmtree(file)

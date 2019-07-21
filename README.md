@@ -46,9 +46,9 @@ We processed Reddit for a 20 month-period ranging from November 2016 until Augus
 
 | Corpus    	        | #train| #dev  | #test | Download | Download with topic words|
 |----------	            |:-----:|:-----:|:-----:|:-----------|:-----------|
-| 3 turns per line   	| 9.2M  | 508K  | 406K  | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.tgz) (1.9GB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.topicals.tgz) (7.8GB)
-| 4 turns per line	    | 4M    | 223K  | 178K  | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_4turns.tgz)  (1.1GB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_4turns.topicals.tgz) (3.7GB)
-| 5 turns per line	    | 1.8M  | 100K  | 80K   | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_5turns.tgz) (609.7MB) | [download](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_5turns.topicals.tgz) (1.8GB)
+| 3 turns per line   	| 9.2M  | 508K  | 406K  | [download](https://bit.ly/2SqZThP) (773MB) | [download](https://bit.ly/2LwKVWX) (2.5GB) | 
+| 4 turns per line	    | 4M    | 223K  | 178K  | [download](https://bit.ly/2Gm5gKm)  (442MB) | [download](https://bit.ly/30E6HeW) (1.2GB)
+| 5 turns per line	    | 1.8M  | 100K  | 80K   | [download](https://bit.ly/2JStT29) (242MB) | [download](https://bit.ly/2JFmYKO) (594MB)
 
 In the data files, each line corresponds to a single conversation where utterances are TAB-separated. The topic words appear after the last utterance separated also by a TAB.
 
