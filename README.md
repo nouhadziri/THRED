@@ -8,7 +8,7 @@ THRED is a multi-turn response generation system intended to produce contextual 
 The codebase is evolved from the Tensorflow [NMT](https://github.com/tensorflow/nmt) repository.
 
 __TL;DR__ Steps to create a dialogue agent using this framework:
- 1. Download the Reddit Conversation Corpus from [here](https://s3.ca-central-1.amazonaws.com/ehsk-research/data/rcc/reddit_conversations_v1.0_3turns.topicals.tgz) (7.8GB file containing triples extracted from Reddit). Please report errors/inappropriate content in the data [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
+ 1. Download the Reddit Conversation Corpus from [here](https://bit.ly/2LwKVWX) (2.5GB download / 7.8GB after uncompressing, which contains triples extracted from Reddit). Please report errors/inappropriate content in the data [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
  2. Install the dependencies using `conda env create -f thred_env.yml` (To use `pip`, see [Dependencies](#dependencies))
  3. Train the model using the following command (pretrained models will be published soon). Note that `MODEL_DIR` is a directory that the model will be saved into. We recommend to train on at least 2 GPUs, otherwise you can reduce the data size (by omitting conversations from the training file) and the model size (by modifying the config file).
  ```
