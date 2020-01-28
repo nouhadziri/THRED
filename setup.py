@@ -12,7 +12,7 @@ setup(
     url="https://github.com/nouhadziri/THRED",
     packages=find_packages(exclude=["*.tests", "*.tests.*",
                                     "tests.*", "tests"]),
-    install_requires=['tensorflow_gpu==1.12.2',
+    install_requires=['tensorflow_gpu==1.15.2',
                       'tensorflow-hub==0.2.0',
                       'spacy>=2.1.0,<2.2.0',
                       'scipy>=1.0.0,<2.0.0',
