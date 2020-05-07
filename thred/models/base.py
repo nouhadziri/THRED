@@ -15,11 +15,9 @@ from ..util.embed import EmbeddingUtil
 class AbstractModel(object):
 
     def init_embeddings(self, vocab_file: str, vocab_pkl: str, dtype=tf.float32, scope: str = None):
-        reserved_vecs, trainable_vecs, frozen_vecs = EmbeddingUtil.load_vectors(vocab_pkl, vocab_file)
+        reserved_vecs, trainable_vecs = EmbeddingUtil.load_vectors(vocab_pkl, vocab_file)
 
         with tf.variable_scope(scope or "embeddings", dtype=dtype):
-            const_embedding_matrix = tf.constant(frozen_vecs, dtype=dtype)
-
             with tf.variable_scope(scope or "trainable_embeddings", dtype=dtype):
                 reserved_token_embeddings = tf.get_variable("reserved_emb_matrix",
                                                             shape=reserved_vecs.shape,
@@ -30,7 +28,7 @@ class AbstractModel(object):
                                                        trainable=True,
                                                        dtype=dtype)
 
-            self.embeddings = tf.concat([reserved_token_embeddings, trainable_embeddings, const_embedding_matrix], 0)
+            self.embeddings = tf.concat([reserved_token_embeddings, trainable_embeddings], 0)
 
     def get_keep_probs(self, mode, params):
         if mode == tf.contrib.learn.ModeKeys.TRAIN:
