@@ -156,22 +156,19 @@ class EmbeddingUtil:
                 "Unknown source type '{}' defined in the embedding config file".format(embedding_type.src_type))
 
     @classmethod
-    def load_vectors(cls: Type[T], vocab_pkl: str, vocab_file: str) -> (np.ndarray, np.ndarray, np.ndarray):
+    def load_vectors(cls: Type[T], vocab_pkl: str, vocab_file: str) -> (np.ndarray, np.ndarray):
         vocab_list, _ = vocab.load_vocab(vocab_file)
 
-        reserved_words, trainables, frozens = [], [], []
+        reserved_words, other_words = [], []
         vec_dict = fs.load_obj(vocab_pkl)
         for w in vocab_list:
             vec = vec_dict[w]["vec"]
-            is_trainable = vec_dict[w]["trainable"]
             if w in vocab.RESERVED_WORDS:
                 reserved_words.append(vec)
-            if is_trainable:
-                trainables.append(vec)
-            else:
-                frozens.append(vec)
 
-        return np.asarray(reserved_words), np.asarray(trainables), np.asarray(frozens)
+            other_words.append(vec)
+
+        return np.asarray(reserved_words), np.asarray(other_words)
 
     def build_if_not_exists(self, embedding_type: str, vocab_pkl: str, vocab_file: str, overwrite: bool=False):
         if Path(vocab_pkl).exists() and not overwrite:
