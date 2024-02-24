@@ -2,7 +2,7 @@ beautifulsoup4==4.6.0
 emot==1.0
 gensim>=3.4.0
 mistune>=0.8.0
-numpy>=1.14.0
+numpy<1.19.0,>=1.16.0
 praw>=6.0.0
 prompt-toolkit>=1.0.15
 PyYAML>=3.12,<4.0
