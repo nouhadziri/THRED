@@ -1,5 +1,3 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5a6cfaad36294d27a8479b227627f1c7)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nouhadziri/Dialogue-Generation-ANA&amp;utm_campaign=Badge_Grade)
-
 This repository hosts the implementation of the paper "[Augmenting Neural Response Generation with Context-Aware Topical
 Attention](https://arxiv.org/abs/1811.01063)".
 
@@ -8,7 +6,7 @@ THRED is a multi-turn response generation system intended to produce contextual 
 The codebase is evolved from the Tensorflow [NMT](https://github.com/tensorflow/nmt) repository.
 
 __TL;DR__ Steps to create a dialogue agent using this framework:
- 1. Download the Reddit Conversation Corpus from [here](https://bit.ly/2LwKVWX) (2.5GB download / 7.8GB after uncompressing, which contains triples extracted from Reddit). Please report errors/inappropriate content in the data [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
+ 1. Download the Reddit Conversation Corpus from [here](https://drive.google.com/file/d/1HyaMz6bz3ju0qwyUKXQPY01r97y7eWD9/view?usp=sharing) (2.5GB download / 7.8GB after uncompressing, which contains triples extracted from Reddit). Please report errors/inappropriate content in the data [here](https://forms.gle/1WfWw5ABHx9GAaVV6).
  2. Install the dependencies using `conda env create -f thred_env.yml` (To use `pip`, see [Dependencies](#dependencies))
  3. Train the model using the following command (pretrained models will be published soon). Note that `MODEL_DIR` is a directory that the model will be saved into. We recommend to train on at least 2 GPUs, otherwise you can reduce the data size (by omitting conversations from the training file) and the model size (by modifying the config file).
  ```
@@ -46,9 +44,9 @@ We processed Reddit for a 20 month-period ranging from November 2016 until Augus
 
 | Corpus    	        | #train| #dev  | #test | Download | Download with topic words|
 |----------	            |:-----:|:-----:|:-----:|:-----------|:-----------|
-| 3 turns per line   	| 9.2M  | 508K  | 406K  | [download](https://bit.ly/2SqZThP) (773MB) | [download](https://bit.ly/2LwKVWX) (2.5GB) | 
-| 4 turns per line	    | 4M    | 223K  | 178K  | [download](https://bit.ly/2Gm5gKm)  (442MB) | [download](https://bit.ly/30E6HeW) (1.2GB)
-| 5 turns per line	    | 1.8M  | 100K  | 80K   | [download](https://bit.ly/2JStT29) (242MB) | [download](https://bit.ly/2JFmYKO) (594MB)
+| 3 turns per line   	| 9.2M  | 508K  | 406K  | [download](https://drive.google.com/file/d/1jV0L7QhFHN7etNknE_wqN1dt__Ia_K_y/view?usp=sharing) (773MB) | [download](https://drive.google.com/file/d/1HyaMz6bz3ju0qwyUKXQPY01r97y7eWD9/view?usp=sharing) (2.5GB) | 
+| 4 turns per line	    | 4M    | 223K  | 178K  | [download](https://drive.google.com/file/d/1GbRLmtHFZlV4mCrcYCexfnw3uWN66qDe/view?usp=sharing)  (442MB) | [download](https://drive.google.com/file/d/1xXLyi30E0GD7Qig7GGj8JAYuonwdxcCu/view?usp=sharing) (1.2GB)
+| 5 turns per line	    | 1.8M  | 100K  | 80K   | [download](https://drive.google.com/file/d/1Mu3NXw4Af-Ivz9U_Zk_P8UJfoWCrIl8S/view?usp=sharing) (242MB) | [download](https://bit.ly/2JFmYKO) (594MB)
 
 In the data files, each line corresponds to a single conversation where utterances are TAB-separated. The topic words appear after the last utterance separated also by a TAB.
 
@@ -94,7 +92,7 @@ A simple command line interface is implemented that allows you to converse with 
 python main.py --mode interactive --model_dir <MODEL_DIR>
 ```
 In the interactive mode, a pre-trained LDA model is required to feed the inferred topic words into the model. We trained an LDA model using Gensim on a Reddit corpus, collected for this purpose.
-It can be downloaded from [here](https://s3.ca-central-1.amazonaws.com/ehsk-research/thred/pretrained_LDA_reddit.tgz).
+It can be downloaded from [here](https://drive.google.com/file/d/1B3GZplM4YFV0A4l0rKte1rTl5ldeQWD5/view?usp=sharing).
 The downloaded file should be uncompressed and passed to the program via `--lda_model_dir <DIR>`.  
 
 ## Citation
